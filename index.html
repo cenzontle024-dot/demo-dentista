@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E4F5C">
+<title>Consultorio Dental Sonríe · Tu tratamiento</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  color-scheme: light;
+  --fondo: #F2F7F7; --papel: #FFFFFF; --tinta: #10302F; --gris: #4F6665; --linea: #D5E4E3;
+  --marca: #0E4F5C; --acento: #1E9E8C; --acento-texto: #0F7466; --coral: #E8735A; --sobre-marca: #FFFFFF;
+  --sans: 'Nunito', 'Helvetica Neue', Arial, sans-serif;
+  --top: env(safe-area-inset-top, 0px); --bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { color-scheme: dark; --fondo: #0A1617; --papel: #12221F; --tinta: #E3F0EE; --gris: #9DB7B4; --linea: #24403C; --acento-texto: #5CD6C3; }
+}
+:root[data-theme="dark"] { color-scheme: dark; --fondo: #0A1617; --papel: #12221F; --tinta: #E3F0EE; --gris: #9DB7B4; --linea: #24403C; --acento-texto: #5CD6C3; }
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--fondo); color: var(--tinta); font-family: var(--sans); font-size: 16px; -webkit-tap-highlight-color: transparent; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+.oculto { display: none !important; }
+.app { max-width: 560px; margin: 0 auto; min-height: 100vh; padding-bottom: calc(var(--bottom) + 40px); }
+.demo { background: var(--coral); color: #2A0E06; text-align: center; font-size: 13px; font-weight: 800; padding: 6px 10px; }
+.cab { background: var(--marca); color: #fff; padding: calc(var(--top) + 14px) 18px 16px; position: sticky; top: 0; z-index: 5; }
+.cab .f1 { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo .ico { width: 40px; height: 40px; border-radius: 12px; background: #fff; display: grid; place-items: center; }
+.logo .ico svg { width: 26px; height: 26px; }
+.logo b { font-size: 19px; font-weight: 800; display: block; line-height: 1.1; }
+.logo small { color: #B8D9DD; font-size: 13px; }
+.chip-modo { background: rgba(255,255,255,0.14); border: 0; color: #fff; border-radius: 20px; padding: 8px 14px; font-weight: 700; font-size: 14px; white-space: nowrap; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 14px; background: rgba(255,255,255,0.1); border-radius: 12px; padding: 4px; }
+.tabs button { border: 0; background: transparent; color: #D8ECEE; border-radius: 9px; padding: 9px; font-weight: 700; }
+.tabs button[aria-pressed="true"] { background: #fff; color: var(--marca); }
+.cuerpo { padding: 18px 16px 0; }
+h1, h2, h3, p { margin: 0; }
+.titulo { font-size: 26px; font-weight: 800; margin: 4px 0 14px; }
+.nota { color: var(--gris); font-size: 14px; }
+.tarjeta { background: var(--papel); border: 1px solid var(--linea); border-radius: 18px; padding: 16px; margin-bottom: 14px; }
+.seccion { font-size: 18px; font-weight: 800; margin: 0 0 10px; }
+.fila { display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; background: var(--papel); border: 1px solid var(--linea); border-radius: 16px; padding: 13px 14px; margin-bottom: 10px; }
+.hora { width: 62px; flex: none; text-align: center; font-weight: 800; color: var(--acento-texto); line-height: 1.1; }
+.hora small { display: block; color: var(--gris); font-weight: 600; font-size: 12px; }
+.fila .txt { flex: 1; min-width: 0; }
+.fila b { display: block; }
+.fila small { color: var(--gris); }
+.estado { display: inline-block; font-size: 12px; font-weight: 800; padding: 4px 10px; border-radius: 12px; background: color-mix(in srgb, var(--acento) 15%, transparent); color: var(--acento-texto); white-space: nowrap; }
+.estado.alerta { background: color-mix(in srgb, var(--coral) 18%, transparent); color: #B34A33; }
+.dia { font-weight: 800; color: var(--gris); font-size: 14px; margin: 16px 2px 8px; }
+.boton { border: 0; border-radius: 12px; padding: 14px 16px; font-weight: 800; font-size: 16px; background: var(--acento); color: #fff; width: 100%; text-align: center; text-decoration: none; display: block; }
+.boton.sec { background: transparent; border: 1.5px solid var(--linea); color: var(--tinta); }
+.boton.marca { background: var(--marca); color: #fff; }
+.boton.wa { background: #1B7A4A; color: #fff; }
+.boton.chico { width: auto; padding: 9px 14px; font-size: 14px; display: inline-block; }
+.pila { display: grid; gap: 10px; }
+.dos { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+.campo { display: flex; flex-direction: column; gap: 5px; }
+.campo label { font-size: 13px; font-weight: 700; color: var(--gris); }
+.campo input, .campo select, .campo textarea { width: 100%; min-width: 0; min-height: 48px; border-radius: 10px; border: 1.5px solid var(--linea); background: var(--papel); padding: 11px 12px; font-size: 16px; -webkit-appearance: none; appearance: none; }
+.campo textarea { min-height: 70px; }
+.trat { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--linea); }
+.trat:last-child { border-bottom: 0; }
+.trat .marca-ok { width: 30px; height: 30px; border-radius: 50%; flex: none; display: grid; place-items: center; border: 2px solid var(--linea); background: var(--papel); }
+.trat.hecho .marca-ok { background: var(--acento); border-color: var(--acento); color: #fff; }
+.trat .marca-ok svg { width: 16px; height: 16px; }
+.trat .txt { flex: 1; min-width: 0; }
+.trat .txt b { display: block; }
+.trat .n { font-weight: 800; white-space: nowrap; }
+button.marca-ok { cursor: pointer; }
+.barra { height: 12px; border-radius: 7px; background: var(--linea); overflow: hidden; margin: 10px 0 6px; }
+.barra i { display: block; height: 100%; background: var(--acento); border-radius: 7px; }
+.cifras { display: flex; justify-content: space-between; font-size: 14px; color: var(--gris); }
+.cifras b { color: var(--tinta); }
+.alerta-salud { background: color-mix(in srgb, var(--coral) 14%, transparent); color: #8F3A27; border-radius: 12px; padding: 10px 12px; font-weight: 700; font-size: 14px; margin-top: 10px; }
+.hero { background: var(--marca); color: #fff; padding: 22px 18px 24px; }
+.hero small { color: #B8D9DD; }
+.hero h2 { font-size: 30px; font-weight: 800; line-height: 1.1; margin: 8px 0 4px; }
+.hero .hora-grande { font-size: 22px; font-weight: 700; }
+.hero .pila { margin-top: 16px; }
+.boton.blanco { background: #fff; color: var(--marca); }
+.boton.borde { background: transparent; border: 1.5px solid rgba(255,255,255,0.5); color: #fff; }
+.pdf { display: flex; gap: 12px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--linea); }
+.pdf:last-child { border-bottom: 0; }
+.pdf .ico-pdf { width: 40px; height: 48px; border-radius: 8px; background: #B02222; color: #fff; font-weight: 800; font-size: 12px; display: grid; place-items: center; flex: none; }
+.pdf .txt { flex: 1; }
+.aviso { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(var(--bottom) + 24px); background: var(--marca); color: #fff; border-radius: 12px; padding: 12px 18px; font-weight: 700; z-index: 30; max-width: 90%; text-align: center; }
+.fondo { position: fixed; inset: 0; background: rgba(10, 30, 32, 0.55); z-index: 20; display: flex; align-items: flex-end; justify-content: center; }
+.hoja { width: 100%; max-width: 560px; max-height: 92%; overflow-y: auto; background: var(--fondo); border-radius: 22px 22px 0 0; padding: 18px 16px calc(var(--bottom) + 20px); }
+.cab-hoja { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.cerrar { width: 44px; height: 44px; border-radius: 12px; border: 1px solid var(--linea); background: var(--papel); font-size: 22px; }
+.pie { text-align: center; color: var(--gris); font-size: 13px; padding: 24px 0 8px; }
+.pie b { color: var(--tinta); }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="demo">Demo de Cenzontle: datos ficticios</div>
+  <header class="cab">
+    <div class="f1">
+      <div class="logo"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#0E4F5C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3c-2.2 0-4 1.8-4 4.2 0 2.3 1 3.8 1.6 6 .6 2.4.9 7.8 2.9 7.8 1.6 0 1.6-5 2.5-6.4.4-.6 1.6-.6 2 0 .9 1.4.9 6.4 2.5 6.4 2 0 2.3-5.4 2.9-7.8.6-2.2 1.6-3.7 1.6-6C21 4.8 19.2 3 17 3c-2 0-2.8 1.2-5 1.2S9 3 7 3z"/></svg></div><div><b>Consultorio Dental Sonríe</b><small id="subtitulo">Panel del consultorio</small></div></div>
+      <button class="chip-modo" id="cambiarVista">Ver como paciente</button>
+    </div>
+    <div class="tabs" id="tabs" role="group" aria-label="Secciones"><button id="tabAgenda" aria-pressed="true">Agenda</button><button id="tabPac" aria-pressed="false">Pacientes</button></div>
+  </header>
+  <main id="vPanel" class="cuerpo"></main>
+  <main id="vPaciente" class="oculto"></main>
+</div>
+<div class="fondo oculto" id="fondo"><div class="hoja" role="dialog" aria-modal="true" id="hoja"></div></div>
+<div class="aviso oculto" id="aviso" role="status"></div>
+
+<script>
+// ---------------- configuración (demo) ----------------
+const CONSULTORIO = { nombre: 'Consultorio Dental Sonríe', doctora: 'Dra. Paola Ríos', tel: '2218009063', direccion: 'Av. Central 45, local 3, Ecatepec, Edo. Méx.' };
+const URL_PUBLICA = 'https://cenzontle024-dot.github.io/demo-dentista/';
+const INDICACIONES = {
+  'Extracción': ['Muerde la gasa de 30 a 45 minutos.', 'Las primeras 24 horas no te enjuagues con fuerza, no escupas, no fumes y no uses popote.', 'Come alimentos blandos y tibios o fríos durante los primeros días.', 'Puedes aplicar compresas frías por fuera de la cara durante el primer día.', 'Toma solo los medicamentos que te indicó tu dentista.'],
+  'Limpieza': ['Es normal sentir algo de sensibilidad por uno o dos días.', 'Cepíllate con suavidad y usa hilo dental diario.', 'Si te sangran un poco las encías, mantén la limpieza: suele mejorar en pocos días.'],
+  'Resina': ['Espera a que pase el efecto de la anestesia para comer.', 'Evita morder cosas muy duras con esa pieza los primeros días.', 'Una sensibilidad leve al frío puede durar unos días.'],
+  'Endodoncia': ['Evita masticar del lado tratado hasta que se coloque la restauración final.', 'Una molestia leve por algunos días es normal.', 'No faltes a tu siguiente cita: la pieza necesita su restauración definitiva.']
+};
+const AVISO_GENERAL = 'Son indicaciones generales. Sigue siempre lo que te indique tu dentista. Si tienes dolor intenso, sangrado que no se detiene, inflamación que aumenta o fiebre, comunícate al consultorio.';
+
+// ---------------- utilidades ----------------
+const $ = id => document.getElementById(id);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pesos = n => new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(n || 0);
+const hoyISO = () => new Date().toLocaleDateString('en-CA');
+const masDias = n => { const d = new Date(); d.setDate(d.getDate() + n); return d.toLocaleDateString('en-CA'); };
+const fechaLarga = f => new Date(f + 'T12:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long' });
+const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+const fechaCorta = f => new Date(f + 'T12:00').toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
+const hora12 = h => { const [H, M] = h.split(':').map(Number); return `${((H + 11) % 12) + 1}:${String(M).padStart(2, '0')} ${H < 12 ? 'a. m.' : 'p. m.'}`; };
+const total = p => p.plan.reduce((s, t) => s + (+t.precio || 0), 0);
+const abonado = p => p.abonos.reduce((s, a) => s + (+a.m || 0), 0);
+const primerNombre = p => p.nombre.split(' ')[0];
+function avisar(t) { const a = $('aviso'); a.textContent = t; a.classList.remove('oculto'); clearTimeout(avisar.t); avisar.t = setTimeout(() => a.classList.add('oculto'), 2600); }
+const ICO_OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>';
+const proximaCita = p => p.citas.filter(c => c.fecha >= hoyISO() && c.estado !== 'Cancelada' && c.estado !== 'Atendida').sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora))[0];
+
+// ---------------- datos del demo ----------------
+const CLAVE = 'dentista_demo_v1';
+function leer() { try { return JSON.parse(localStorage.getItem(CLAVE)) || null; } catch (e) { return null; } }
+function guardar() { try { localStorage.setItem(CLAVE, JSON.stringify(db)); } catch (e) {} }
+function semilla() {
+  return { sig: 4, pacientes: [
+    { id: 'P-001', nombre: 'Ana Martínez', tel: '5512345678', nac: '1988-04-12', alergias: 'Penicilina', notas: 'Le da miedo la anestesia; explicar cada paso.',
+      plan: [{ t: 'Limpieza dental', pieza: '', precio: 600, hecho: true, f: masDias(-14) }, { t: 'Resina', pieza: '36', precio: 850, hecho: true, f: masDias(-7) }, { t: 'Resina', pieza: '46', precio: 850, hecho: false }, { t: 'Endodoncia', pieza: '26', precio: 3200, hecho: false }],
+      abonos: [{ f: masDias(-14), m: 1500, forma: 'Efectivo' }, { f: masDias(-7), m: 1000, forma: 'Transferencia' }],
+      citas: [{ id: 'C-1', fecha: masDias(-14), hora: '17:00', motivo: 'Limpieza dental', estado: 'Atendida' }, { id: 'C-2', fecha: masDias(-7), hora: '17:00', motivo: 'Resina pieza 36', estado: 'Atendida' }, { id: 'C-3', fecha: masDias(2), hora: '17:00', motivo: 'Resina pieza 46', estado: 'Confirmada' }] },
+    { id: 'P-002', nombre: 'Luis Gómez', tel: '5587654321', nac: '1975-09-30', alergias: '', notas: '',
+      plan: [{ t: 'Extracción', pieza: '48', precio: 1200, hecho: false }], abonos: [],
+      citas: [{ id: 'C-4', fecha: hoyISO(), hora: '11:00', motivo: 'Extracción de muela del juicio', estado: 'Por confirmar' }] },
+    { id: 'P-003', nombre: 'Sofía Herrera', tel: '5544332211', nac: '2001-01-20', alergias: '', notas: '',
+      plan: [{ t: 'Limpieza dental', pieza: '', precio: 600, hecho: false }], abonos: [],
+      citas: [{ id: 'C-5', fecha: hoyISO(), hora: '16:30', motivo: 'Limpieza dental', estado: 'Confirmada' }] }
+  ] };
+}
+let db = leer() || semilla();
+
+// ---------------- enlace del paciente ----------------
+// En el demo, los datos viajan dentro del enlace; en la versión real, el enlace lleva solo un código y consulta la hoja del consultorio.
+function codificar(p) { return btoa(unescape(encodeURIComponent(JSON.stringify(p)))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function decodificar(t) { const b = t.replace(/-/g, '+').replace(/_/g, '/'); return JSON.parse(decodeURIComponent(escape(atob(b + '==='.slice((b.length + 3) % 4))))); }
+const enlace = p => `${URL_PUBLICA}?paciente=${codificar({ id: p.id, nombre: p.nombre, plan: p.plan, abonos: p.abonos, citas: p.citas.filter(c => c.estado !== 'Cancelada') })}`;
+const wa = (tel, txt) => `https://wa.me/52${String(tel).replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent(txt)}`;
+function msgRecordatorio(p) {
+  const c = proximaCita(p);
+  return c ? `Hola ${primerNombre(p)}, te saluda ${CONSULTORIO.nombre}. Te recordamos tu cita el ${fechaLarga(c.fecha)} a las ${hora12(c.hora)}. Puedes confirmar y ver tu tratamiento aquí: ${enlace(p)}` : `Hola ${primerNombre(p)}, te saluda ${CONSULTORIO.nombre}. Aquí puedes ver tu tratamiento: ${enlace(p)}`;
+}
+
+// ---------------- panel del consultorio ----------------
+let tab = 'agenda', vista = 'panel', pacienteVista = null, desdeEnlace = false;
+$('tabAgenda').onclick = () => { tab = 'agenda'; pintarPanel(); };
+$('tabPac').onclick = () => { tab = 'pacientes'; pintarPanel(); };
+function pintarPanel() {
+  $('tabAgenda').setAttribute('aria-pressed', tab === 'agenda'); $('tabPac').setAttribute('aria-pressed', tab === 'pacientes');
+  if (tab === 'agenda') pintarAgenda(); else pintarPacientes();
+  window.scrollTo(0, 0);
+}
+function pintarAgenda() {
+  const citas = db.pacientes.flatMap(p => p.citas.map(c => ({ ...c, p }))).filter(c => c.fecha >= hoyISO() && c.estado !== 'Cancelada').sort((a, b) => (a.fecha + a.hora).localeCompare(b.fecha + b.hora));
+  let h = '<h1 class="titulo">Agenda</h1><button class="boton" id="nuevaCita">+ Nueva cita</button>', dia = '';
+  citas.forEach(c => {
+    if (c.fecha !== dia) { dia = c.fecha; h += `<p class="dia">${c.fecha === hoyISO() ? 'Hoy, ' + fechaLarga(c.fecha) : cap(fechaLarga(c.fecha))}</p>`; }
+    h += `<button class="fila" data-p="${c.p.id}"><div class="hora">${hora12(c.hora).replace(' ', '<small>')}</small></div><div class="txt"><b>${esc(c.p.nombre)}</b><small>${esc(c.motivo)}</small></div><span class="estado${c.estado === 'Por confirmar' ? ' alerta' : ''}">${esc(c.estado)}</span></button>`;
+  });
+  if (!citas.length) h += '<p class="nota" style="margin-top: 14px">No hay citas próximas.</p>';
+  h += '<p class="nota" style="margin-top: 14px">Demo: los datos se guardan en este navegador. En la versión real viven en la hoja de Google del consultorio.</p>';
+  $('vPanel').innerHTML = h;
+  $('nuevaCita').onclick = () => hojaCita();
+  document.querySelectorAll('#vPanel .fila').forEach(b => b.onclick = () => abrirPaciente(b.dataset.p));
+}
+function pintarPacientes() {
+  $('vPanel').innerHTML = '<h1 class="titulo">Pacientes</h1><button class="boton" id="nuevoPac">+ Nuevo paciente</button><div style="margin-top: 12px">' +
+    db.pacientes.map(p => { const s = total(p) - abonado(p); return `<button class="fila" data-p="${p.id}"><div class="txt"><b>${esc(p.nombre)}</b><small>${p.plan.filter(t => t.hecho).length} de ${p.plan.length} tratamientos${s > 0 ? `, saldo ${pesos(s)}` : ''}</small></div>${p.alergias ? '<span class="estado alerta">Alergia</span>' : ''}</button>`; }).join('') + '</div>';
+  $('nuevoPac').onclick = () => hojaPaciente();
+  document.querySelectorAll('#vPanel .fila').forEach(b => b.onclick = () => abrirPaciente(b.dataset.p));
+}
+
+function abrirPaciente(id) {
+  const p = db.pacientes.find(x => x.id === id); if (!p) return;
+  const t = total(p), a = abonado(p), s = t - a, c = proximaCita(p);
+  $('vPanel').innerHTML = `
+    <button class="boton sec chico" id="volver" style="margin-bottom: 12px">‹ Volver</button>
+    <div class="tarjeta"><h2 style="font-size: 24px; font-weight: 800">${esc(p.nombre)}</h2><p class="nota">${esc(p.id)}, WhatsApp ${esc(p.tel)}</p>
+      ${p.alergias ? `<p class="alerta-salud">Alergia: ${esc(p.alergias)}</p>` : ''}${p.notas ? `<p class="nota" style="margin-top: 10px">${esc(p.notas)}</p>` : ''}</div>
+    <div class="tarjeta"><p class="seccion">Próxima cita</p>${c ? `<p style="font-weight: 800">${cap(fechaLarga(c.fecha))}, ${hora12(c.hora)}</p><p class="nota">${esc(c.motivo)}, ${esc(c.estado)}</p>
+      <div class="dos" style="margin-top: 12px"><a class="boton wa" href="${wa(p.tel, msgRecordatorio(p))}" target="_blank" rel="noopener">Recordar por WhatsApp</a><button class="boton sec" id="atendida">Marcar atendida</button></div>` : '<p class="nota">Sin cita próxima.</p>'}
+      <button class="boton sec" id="agendar" style="margin-top: 10px">+ Agendar cita</button></div>
+    <div class="tarjeta"><p class="seccion">Plan de tratamiento</p>
+      ${p.plan.map((x, i) => `<div class="trat${x.hecho ? ' hecho' : ''}"><button class="marca-ok" data-i="${i}" aria-label="${x.hecho ? 'Marcar como pendiente' : 'Marcar como realizado'}: ${esc(x.t)}">${x.hecho ? ICO_OK : ''}</button><div class="txt"><b>${esc(x.t)}${x.pieza ? ` · pieza ${esc(x.pieza)}` : ''}</b><small class="nota">${x.hecho ? 'Realizado ' + fechaCorta(x.f) : 'Pendiente'}</small></div><span class="n">${pesos(x.precio)}</span></div>`).join('')}
+      <div class="barra" aria-hidden="true"><i style="width: ${t ? Math.round(a / t * 100) : 0}%"></i></div>
+      <div class="cifras"><span>Pagado <b>${pesos(a)}</b> de ${pesos(t)}</span><span>Saldo <b>${pesos(s)}</b></span></div>
+      <div class="dos" style="margin-top: 12px"><button class="boton sec" id="agregarTrat">+ Tratamiento</button><button class="boton marca" id="abono">+ Registrar abono</button></div>
+      <button class="boton sec" id="pdfPres" style="margin-top: 10px">Descargar presupuesto (PDF)</button></div>
+    <div class="tarjeta"><p class="seccion">Enlace del paciente</p><p class="nota">Ahí ve su próxima cita, la agrega a su calendario, revisa su tratamiento y su saldo, y descarga sus documentos.</p>
+      <div class="pila" style="margin-top: 12px"><a class="boton wa" href="${wa(p.tel, msgRecordatorio(p))}" target="_blank" rel="noopener">Enviar por WhatsApp</a><button class="boton sec" id="verPac">Ver lo que ve el paciente</button></div></div>`;
+  $('volver').onclick = pintarPanel;
+  if ($('atendida')) $('atendida').onclick = () => { c.estado = 'Atendida'; guardar(); avisar('Cita marcada como atendida'); abrirPaciente(id); };
+  $('agendar').onclick = () => hojaCita(p.id);
+  document.querySelectorAll('.marca-ok').forEach(b => b.onclick = () => { const x = p.plan[+b.dataset.i]; x.hecho = !x.hecho; x.f = x.hecho ? hoyISO() : ''; guardar(); abrirPaciente(id); });
+  $('agregarTrat').onclick = () => hojaTratamiento(p.id);
+  $('abono').onclick = () => hojaAbono(p.id);
+  $('pdfPres').onclick = () => pdfPresupuesto(p);
+  $('verPac').onclick = () => verComoPaciente(p);
+  window.scrollTo(0, 0);
+}
+
+// ---------------- ventanas de captura ----------------
+function abrirHoja(titulo, html, alGuardar) {
+  $('hoja').innerHTML = `<div class="cab-hoja"><h2 style="font-size: 22px; font-weight: 800">${titulo}</h2><button class="cerrar" id="cerrarHoja" aria-label="Cerrar">×</button></div>${html}<p class="nota" id="errHoja" role="alert" style="margin-top: 8px"></p><div class="pila" style="margin-top: 12px"><button class="boton" id="okHoja">Guardar</button><button class="boton sec" id="cancelHoja">Cancelar</button></div>`;
+  $('fondo').classList.remove('oculto');
+  const cerrar = () => $('fondo').classList.add('oculto');
+  $('cerrarHoja').onclick = cerrar; $('cancelHoja').onclick = cerrar;
+  $('okHoja').onclick = () => { const err = alGuardar(); if (err) $('errHoja').textContent = err; else cerrar(); };
+}
+$('fondo').onclick = e => { if (e.target === $('fondo')) $('fondo').classList.add('oculto'); };
+const v = id => ($(id).value || '').trim();
+function hojaCita(pid) {
+  abrirHoja('Nueva cita', `<div class="pila">
+    <div class="campo"><label for="cPac">Paciente</label><select id="cPac">${db.pacientes.map(p => `<option value="${p.id}"${p.id === pid ? ' selected' : ''}>${esc(p.nombre)}</option>`).join('')}</select></div>
+    <div class="dos"><div class="campo"><label for="cFecha">Fecha</label><input id="cFecha" type="date" value="${masDias(1)}"></div><div class="campo"><label for="cHora">Hora</label><input id="cHora" type="time" value="17:00"></div></div>
+    <div class="campo"><label for="cMot">Motivo</label><input id="cMot" placeholder="Por ejemplo: resina pieza 46"></div></div>`, () => {
+    if (!v('cMot') || !v('cFecha') || !v('cHora')) return 'Completa la fecha, la hora y el motivo.';
+    const p = db.pacientes.find(x => x.id === v('cPac'));
+    p.citas.push({ id: 'C-' + Date.now(), fecha: v('cFecha'), hora: v('cHora'), motivo: v('cMot'), estado: 'Por confirmar' }); guardar();
+    avisar('Cita agendada. Envíale su recordatorio por WhatsApp.'); abrirPaciente(p.id);
+  });
+}
+function hojaPaciente() {
+  abrirHoja('Nuevo paciente', `<div class="pila">
+    <div class="campo"><label for="nNom">Nombre completo</label><input id="nNom"></div>
+    <div class="dos"><div class="campo"><label for="nTel">WhatsApp</label><input id="nTel" inputmode="tel"></div><div class="campo"><label for="nNac">Nacimiento</label><input id="nNac" type="date"></div></div>
+    <div class="campo"><label for="nAle">Alergias</label><input id="nAle" placeholder="Ninguna"></div>
+    <div class="campo"><label for="nNot">Notas</label><textarea id="nNot"></textarea></div></div>`, () => {
+    if (!v('nNom') || String(v('nTel')).replace(/\D/g, '').length < 10) return 'Escribe el nombre y un WhatsApp de 10 dígitos.';
+    const p = { id: 'P-' + String(db.sig++).padStart(3, '0'), nombre: v('nNom'), tel: String(v('nTel')).replace(/\D/g, '').slice(-10), nac: v('nNac'), alergias: v('nAle'), notas: v('nNot'), plan: [], abonos: [], citas: [] };
+    db.pacientes.unshift(p); guardar(); avisar('Paciente agregado'); abrirPaciente(p.id);
+  });
+}
+function hojaTratamiento(pid) {
+  abrirHoja('Agregar tratamiento', `<div class="pila">
+    <div class="campo"><label for="tTipo">Tratamiento</label><select id="tTipo">${['Limpieza dental', 'Resina', 'Extracción', 'Endodoncia', 'Corona', 'Blanqueamiento', 'Otro'].map(x => `<option>${x}</option>`).join('')}</select></div>
+    <div class="dos"><div class="campo"><label for="tPieza">Pieza (opcional)</label><input id="tPieza" inputmode="numeric"></div><div class="campo"><label for="tPrecio">Precio</label><input id="tPrecio" inputmode="decimal"></div></div></div>`, () => {
+    if (!(parseFloat(v('tPrecio')) > 0)) return 'Escribe el precio.';
+    const p = db.pacientes.find(x => x.id === pid); p.plan.push({ t: v('tTipo'), pieza: v('tPieza'), precio: parseFloat(v('tPrecio')), hecho: false }); guardar(); abrirPaciente(pid);
+  });
+}
+function hojaAbono(pid) {
+  const p = db.pacientes.find(x => x.id === pid);
+  abrirHoja('Registrar abono', `<p class="nota" style="margin-bottom: 10px">Saldo actual: <b>${pesos(total(p) - abonado(p))}</b></p><div class="dos">
+    <div class="campo"><label for="aMonto">Monto</label><input id="aMonto" inputmode="decimal"></div><div class="campo"><label for="aForma">Forma de pago</label><select id="aForma"><option>Efectivo</option><option>Transferencia</option><option>Tarjeta</option></select></div></div>`, () => {
+    if (!(parseFloat(v('aMonto')) > 0)) return 'Escribe el monto.';
+    p.abonos.push({ f: hoyISO(), m: parseFloat(v('aMonto')), forma: v('aForma') }); guardar(); avisar('Abono registrado'); abrirPaciente(pid);
+  });
+}
+
+// ---------------- vista del paciente ----------------
+function verComoPaciente(p) { pacienteVista = JSON.parse(JSON.stringify(p)); vista = 'paciente'; pintarPaciente(); }
+function pintarPaciente() {
+  const p = pacienteVista, c = proximaCita(p), t = total(p), a = abonado(p), s = Math.max(0, t - a);
+  const hechos = p.plan.filter(x => x.hecho);
+  $('vPanel').classList.add('oculto'); $('vPaciente').classList.remove('oculto'); $('tabs').classList.add('oculto');
+  $('subtitulo').textContent = 'Tu tratamiento'; $('cambiarVista').classList.toggle('oculto', desdeEnlace); $('cambiarVista').textContent = 'Volver al panel';
+  $('vPaciente').innerHTML = `
+    <section class="hero"><small>Hola, ${esc(primerNombre(p))}. ${c ? 'Tu próxima cita es el' : 'No tienes citas próximas.'}</small>
+      ${c ? `<h2>${cap(fechaLarga(c.fecha))}</h2><p class="hora-grande">${hora12(c.hora)}, ${esc(c.motivo)}</p>
+      <div class="pila"><button class="boton blanco" id="calGoogle">Agregar a mi calendario</button>
+      <div class="dos"><a class="boton borde" href="${wa(CONSULTORIO.tel, `Hola, confirmo mi cita del ${fechaLarga(c.fecha)} a las ${hora12(c.hora)}. Soy ${p.nombre}.`)}" target="_blank" rel="noopener">Confirmar</a><a class="boton borde" href="${wa(CONSULTORIO.tel, `Hola, necesito cambiar mi cita del ${fechaLarga(c.fecha)} a las ${hora12(c.hora)}. Soy ${p.nombre}.`)}" target="_blank" rel="noopener">Cambiar cita</a></div></div>` : `<div class="pila"><a class="boton blanco" href="${wa(CONSULTORIO.tel, `Hola, quiero agendar una cita. Soy ${p.nombre}.`)}" target="_blank" rel="noopener">Agendar por WhatsApp</a></div>`}
+    </section>
+    <div class="cuerpo">
+      <div class="tarjeta"><p class="seccion">Tu tratamiento</p><p class="nota">${hechos.length} de ${p.plan.length} realizados</p>
+        ${p.plan.map(x => `<div class="trat${x.hecho ? ' hecho' : ''}"><span class="marca-ok">${x.hecho ? ICO_OK : ''}</span><div class="txt"><b>${esc(x.t)}${x.pieza ? ` · pieza ${esc(x.pieza)}` : ''}</b><small class="nota">${x.hecho ? 'Realizado ' + fechaCorta(x.f) : 'Pendiente'}</small></div><span class="n">${pesos(x.precio)}</span></div>`).join('')}
+        <div class="barra" aria-hidden="true"><i style="width: ${t ? Math.round(a / t * 100) : 0}%"></i></div>
+        <div class="cifras"><span>Pagado <b>${pesos(a)}</b> de ${pesos(t)}</span><span>Por pagar <b>${pesos(s)}</b></span></div></div>
+      <div class="tarjeta"><p class="seccion">Tus documentos</p>
+        <div class="pdf"><span class="ico-pdf">PDF</span><div class="txt"><b>Presupuesto y pagos</b><br><small class="nota">Tu plan completo</small></div><button class="boton chico sec" id="pdfPresP">Descargar</button></div>
+        ${[...new Set(hechos.map(x => x.t === 'Limpieza dental' ? 'Limpieza' : x.t).filter(x => INDICACIONES[x]))].map(k => `<div class="pdf"><span class="ico-pdf">PDF</span><div class="txt"><b>Cuidados después de: ${esc(k.toLowerCase())}</b><br><small class="nota">Indicaciones para casa</small></div><button class="boton chico sec" data-ind="${k}">Descargar</button></div>`).join('')}
+      </div>
+      <div class="tarjeta"><p class="seccion">Antes de tu cita</p><p class="nota">Ayúdanos a atenderte mejor con tu cuestionario de salud. Toma 2 minutos.</p><button class="boton sec" id="cuest" style="margin-top: 12px">Llenar cuestionario de salud</button></div>
+      <div class="tarjeta"><p class="seccion">${esc(CONSULTORIO.doctora)}</p><p class="nota">${esc(CONSULTORIO.direccion)}</p>
+        <div class="dos" style="margin-top: 12px"><a class="boton wa" href="${wa(CONSULTORIO.tel, `Hola, tengo una duda. Soy ${p.nombre}.`)}" target="_blank" rel="noopener">WhatsApp</a><a class="boton sec" href="tel:+52${CONSULTORIO.tel}">Llamar</a></div></div>
+      <p class="pie">Tecnología por <b>Cenzontle</b>. Adiós libreta. Tu negocio habla por ti.</p>
+    </div>`;
+  if ($('calGoogle')) $('calGoogle').onclick = () => elegirCalendario(p, c);
+  $('pdfPresP').onclick = () => pdfPresupuesto(p);
+  document.querySelectorAll('[data-ind]').forEach(b => b.onclick = () => pdfIndicaciones(p, b.dataset.ind));
+  $('cuest').onclick = cuestionario;
+  window.scrollTo(0, 0);
+}
+$('cambiarVista').onclick = () => {
+  if (vista === 'paciente') { vista = 'panel'; $('vPaciente').classList.add('oculto'); $('vPanel').classList.remove('oculto'); $('tabs').classList.remove('oculto'); $('subtitulo').textContent = 'Panel del consultorio'; $('cambiarVista').textContent = 'Ver como paciente'; abrirPaciente(pacienteVista.id); }
+  else verComoPaciente(db.pacientes[0]);
+};
+
+// ---------------- calendario (recordatorio gratuito en el celular del paciente) ----------------
+function fechasCita(c) {
+  const ini = c.fecha.replace(/-/g, '') + 'T' + c.hora.replace(':', '') + '00';
+  const [H, M] = c.hora.split(':').map(Number); const d = new Date(c.fecha + 'T12:00'); d.setHours(H + 1, M, 0, 0);
+  const fin = d.toLocaleDateString('en-CA').replace(/-/g, '') + 'T' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0') + '00';
+  return [ini, fin];
+}
+function elegirCalendario(p, c) {
+  const [ini, fin] = fechasCita(c);
+  const g = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('Cita dental: ' + c.motivo)}&dates=${ini}/${fin}&details=${encodeURIComponent(CONSULTORIO.nombre + ', ' + CONSULTORIO.doctora)}&location=${encodeURIComponent(CONSULTORIO.direccion)}`;
+  $('hoja').innerHTML = `<div class="cab-hoja"><h2 style="font-size: 22px; font-weight: 800">Agregar a mi calendario</h2><button class="cerrar" id="cerrarHoja" aria-label="Cerrar">×</button></div>
+    <p class="nota">Tu celular te avisará un día antes y dos horas antes de tu cita.</p>
+    <div class="pila" style="margin-top: 14px"><a class="boton" href="${g}" target="_blank" rel="noopener">Calendario de Google (Android)</a><button class="boton sec" id="ics">Calendario del iPhone u otro</button></div>`;
+  $('fondo').classList.remove('oculto');
+  $('cerrarHoja').onclick = () => $('fondo').classList.add('oculto');
+  $('ics').onclick = () => {
+    const ics = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Cenzontle//Demo dentista//ES', 'BEGIN:VEVENT', `UID:${c.id}@cenzontle`, `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').slice(0, 15)}Z`, `DTSTART:${ini}`, `DTEND:${fin}`,
+      `SUMMARY:Cita dental: ${c.motivo}`, `LOCATION:${CONSULTORIO.direccion.replace(/,/g, '\\,')}`, `DESCRIPTION:${CONSULTORIO.nombre}\\, ${CONSULTORIO.doctora}`,
+      'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY', 'DESCRIPTION:Mañana tienes cita dental', 'END:VALARM', 'BEGIN:VALARM', 'TRIGGER:-PT2H', 'ACTION:DISPLAY', 'DESCRIPTION:Tu cita dental es en 2 horas', 'END:VALARM', 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'cita-dental.ics'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000); $('fondo').classList.add('oculto');
+  };
+}
+function cuestionario() {
+  $('hoja').innerHTML = `<div class="cab-hoja"><h2 style="font-size: 22px; font-weight: 800">Cuestionario de salud</h2><button class="cerrar" id="cerrarHoja" aria-label="Cerrar">×</button></div>
+    <div class="pila">${['¿Tienes alguna alergia a medicamentos?', '¿Padeces diabetes o presión alta?', '¿Tomas algún medicamento actualmente?', '¿Estás embarazada o crees estarlo?'].map((q, i) => `<div class="campo"><label for="q${i}">${q}</label><select id="q${i}"><option>No</option><option>Sí</option><option>No sé</option></select></div>`).join('')}
+    <div class="campo"><label for="qc">¿Algo más que debamos saber?</label><textarea id="qc"></textarea></div></div>
+    <p class="nota" style="margin-top: 10px">Demo: en la versión real, tus respuestas se guardan de forma privada en tu expediente del consultorio.</p>
+    <div class="pila" style="margin-top: 12px"><button class="boton" id="qEnviar">Enviar</button></div>`;
+  $('fondo').classList.remove('oculto');
+  $('cerrarHoja').onclick = () => $('fondo').classList.add('oculto');
+  $('qEnviar').onclick = () => { $('fondo').classList.add('oculto'); avisar('¡Gracias! Tu cuestionario quedó listo.'); };
+}
+
+// ---------------- documentos PDF ----------------
+function pdfBase(titulo, sub) {
+  const { jsPDF } = window.jspdf; const doc = new jsPDF({ unit: 'mm', format: 'letter' });
+  doc.setFillColor(14, 79, 92); doc.rect(0, 0, 216, 30, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(17); doc.text(CONSULTORIO.nombre, 16, 14);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(`${CONSULTORIO.doctora}  ·  ${CONSULTORIO.direccion}  ·  WhatsApp ${CONSULTORIO.tel}`, 16, 22);
+  doc.setDrawColor(30, 158, 140); doc.setLineWidth(1.4); doc.line(0, 30, 216, 30);
+  doc.setTextColor(16, 48, 47); doc.setFont('helvetica', 'bold'); doc.setFontSize(15); doc.text(titulo, 16, 44);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.text(sub, 16, 51);
+  return doc;
+}
+function pie(doc) { doc.setFontSize(8); doc.setTextColor(79, 102, 101); doc.text('Documento generado con la plataforma de Cenzontle · tinyurl.com/cenzontle', 108, 270, { align: 'center' }); }
+function pdfPresupuesto(p) {
+  if (!window.jspdf) return avisar('Necesitas internet para generar el PDF');
+  const doc = pdfBase('Presupuesto y estado de cuenta', `Paciente: ${p.nombre}  ·  ${new Date().toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}`);
+  let y = 62; doc.setFillColor(242, 247, 247); doc.rect(16, y, 184, 9, 'F'); doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+  doc.text('Tratamiento', 19, y + 6); doc.text('Estado', 140, y + 6); doc.text('Precio', 197, y + 6, { align: 'right' }); y += 15; doc.setFont('helvetica', 'normal');
+  p.plan.forEach(x => { doc.text(`${x.t}${x.pieza ? ' (pieza ' + x.pieza + ')' : ''}`, 19, y); doc.text(x.hecho ? 'Realizado' : 'Pendiente', 140, y); doc.text(pesos(x.precio), 197, y, { align: 'right' }); y += 8; });
+  y += 4; doc.setDrawColor(213, 228, 227); doc.line(16, y - 4, 200, y - 4);
+  doc.setFont('helvetica', 'bold'); doc.text('Total del tratamiento', 120, y + 2); doc.text(pesos(total(p)), 197, y + 2, { align: 'right' });
+  y += 16; doc.setFontSize(11); doc.text('Pagos realizados', 16, y); y += 7; doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  if (!p.abonos.length) { doc.text('Sin pagos registrados.', 19, y); y += 8; }
+  p.abonos.forEach(a => { doc.text(`${new Date(a.f + 'T12:00').toLocaleDateString('es-MX')}  ·  ${a.forma}`, 19, y); doc.text(pesos(a.m), 197, y, { align: 'right' }); y += 7; });
+  y += 4; doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.text('Saldo por pagar', 120, y); doc.text(pesos(Math.max(0, total(p) - abonado(p))), 197, y, { align: 'right' });
+  y += 14; doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.text(doc.splitTextToSize('Precios en moneda nacional. El plan puede ajustarse según la evolución del tratamiento; cualquier cambio se te informará antes de realizarlo.', 184), 16, y);
+  pie(doc); doc.save(`Presupuesto-${p.nombre.replace(/\s+/g, '-')}.pdf`);
+}
+function pdfIndicaciones(p, tipo) {
+  if (!window.jspdf) return avisar('Necesitas internet para generar el PDF');
+  const doc = pdfBase(`Cuidados después de: ${tipo.toLowerCase()}`, `Paciente: ${p.nombre}`);
+  let y = 64; doc.setFontSize(11);
+  INDICACIONES[tipo].forEach((t, i) => { const l = doc.splitTextToSize(`${i + 1}.  ${t}`, 178); doc.text(l, 19, y); y += l.length * 6 + 4; });
+  y += 6; doc.setFillColor(253, 236, 231); const av = doc.splitTextToSize(AVISO_GENERAL, 176); doc.rect(16, y - 6, 184, av.length * 5.5 + 8, 'F');
+  doc.setFontSize(10); doc.setTextColor(143, 58, 39); doc.text(av, 20, y); doc.setTextColor(16, 48, 47);
+  pie(doc); doc.save(`Cuidados-${tipo}-${p.nombre.split(' ')[0]}.pdf`);
+}
+
+// ---------------- arranque ----------------
+(function () {
+  const t = new URLSearchParams(location.search).get('paciente');
+  if (t) { try { pacienteVista = decodificar(t); desdeEnlace = true; vista = 'paciente'; pintarPaciente(); return; } catch (e) { $('vPanel').innerHTML = '<p>El enlace no es válido. Pide uno nuevo al consultorio.</p>'; return; } }
+  pintarPanel();
+})();
+</script>
+</body>
+</html>
